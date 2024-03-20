@@ -1,0 +1,55 @@
+#include "BST.h" // Include the BST class definition
+
+// Constructor: Initializes the BST with a null root, indicating an empty tree.
+BST::BST() {
+    root = nullptr;
+}
+
+// Destructor: Cleans up the tree to prevent memory leaks by removing all nodes.
+BST::~BST() {
+    MakeEmpty(root);
+}
+
+// Public function to insert a new record into the BST.
+void BST::PutItem(IrisRecord newRecord) {
+    Insert(root, newRecord); // Calls the private Insert function starting from the root.
+}
+
+// Public function to print a subset of the tree based on a threshold.
+void BST::PrintSubset(double threshold) {
+    InOrderPrintSubset(root, threshold); // Calls the private InOrderPrintSubset function starting from the root.
+}
+
+// Private helper function to insert a new node in the correct location in the BST.
+void BST::Insert(TNode*& curnode, IrisRecord newRecord) {
+    if (curnode == nullptr) { // If the current node is null, the correct location has been found.
+        curnode = new TNode; // Create a new node.
+        curnode->item = newRecord; // Store the record in the node.
+        curnode->left = curnode->right = nullptr; // Initialize the left and right children as null.
+    } else if (newRecord.sepalLength < curnode->item.sepalLength) {
+        Insert(curnode->left, newRecord); // If the new record's sepal length is less, go left.
+    } else {
+        Insert(curnode->right, newRecord); // Otherwise, go right.
+    }
+}
+
+// Private helper function for in-order traversal to print records exceeding a threshold.
+void BST::InOrderPrintSubset(TNode* curnode, double threshold) {
+    if (curnode != nullptr) {
+        InOrderPrintSubset(curnode->left, threshold); // Visit the left subtree first.
+        if (curnode->item.sepalLength > threshold) { // If the current node exceeds the threshold, print it.
+            std::cout << "ID: " << curnode->item.id << ", Sepal Length: " << curnode->item.sepalLength << std::endl;
+        }
+        InOrderPrintSubset(curnode->right, threshold); // Then visit the right subtree.
+    }
+}
+
+// Private helper function to recursively delete all nodes from the BST.
+void BST::MakeEmpty(TNode*& curnode) {
+    if (curnode != nullptr) { // If the current node is not null, it needs to be deleted.
+        MakeEmpty(curnode->left); // Recursively delete the left subtree.
+        MakeEmpty(curnode->right); // Recursively delete the right subtree.
+        delete curnode; // Delete the current node.
+        curnode = nullptr; // Set the current node pointer to null.
+    }
+}
